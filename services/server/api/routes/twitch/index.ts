@@ -6,4 +6,6 @@ const router = express.Router();
 
 router.get("/streams", TwitchControllers.getStreams);
 
+router.get("/clips", TwitchControllers.getClipsFromUser);
+
 export default router;
