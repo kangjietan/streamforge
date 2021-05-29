@@ -9,7 +9,7 @@ import Clip from "../components/Clip/Clip";
 
 const serverUrl = "http://localhost:3000";
 
-interface IStream {
+export interface IStream {
   id: string;
   user_id: string;
   user_login: string;
@@ -65,6 +65,8 @@ const Container = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  /* margin-top: 144px; */
+  margin-bottom: 144px;
 `;
 
 /**
@@ -74,10 +76,8 @@ const Container = styled.div`
  */
 const App: React.FunctionComponent = () => {
   const [streams, setStreams] = useState<IStream[]>([]);
-  const [streamClips, setStreamClips] = useState<IClipsFromStreamsData[]>([]);
   const [pageCursor, setPageCursor] = useState("");
   const [offset, setOffset] = useState(0);
-  // const [currentClip, setCurrentClip] = useState<IClip | null>(null);
 
   const getStreams = async (
     limit: number,
@@ -89,7 +89,6 @@ const App: React.FunctionComponent = () => {
     const twitchStreamsData: IGetStreamsData = await axios
       .get(url)
       .then((response) => {
-        // console.log(response);
         return response.data;
       })
       .catch((error) => {
@@ -100,29 +99,6 @@ const App: React.FunctionComponent = () => {
 
     setStreams(data);
     setPageCursor(pagination.cursor);
-    fetchClipsFromStreams(data);
-  };
-
-  const fetchClipsFromStreams = async (streams?: IStream[]) => {
-    if (streams) {
-      const clips: IClipsFromStreamsData[] = [];
-
-      for (let i = 0; i < streams.length; i++) {
-        const stream = streams[i];
-        const url = `${serverUrl}/twitch/clips?broadcasterID=${stream.user_id}&gameID=${stream.game_id}`;
-        const data = await axios.get(url).then((response) => {
-          console.log(response);
-          return response.data;
-        });
-
-        clips.push(data);
-      }
-
-      console.log("============CLIPS==============");
-      console.log(clips);
-
-      setStreamClips(clips);
-    }
   };
 
   useEffect(() => {
@@ -132,7 +108,7 @@ const App: React.FunctionComponent = () => {
   return (
     <Container>
       <GlobalStyles />
-      <Clip streamClips={streamClips[offset]} />
+      <Clip stream={streams[offset]} />
       {/* <Gallery clips={streamClips} /> */}
     </Container>
   );
