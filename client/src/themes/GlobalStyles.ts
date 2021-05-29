@@ -1,6 +1,9 @@
 import { createGlobalStyle } from "styled-components";
+import Sanitize from './sanitize';
 
 const GlobalStyles = createGlobalStyle`
+  ${Sanitize}
+
   :root {
     --container-bg-color: hsla(0,0%, 100%, .05);
     --container-border-radius: 12px;
