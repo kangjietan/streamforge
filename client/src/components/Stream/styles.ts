@@ -43,9 +43,23 @@ export const GoToStreamButton = styled.a`
 `;
 
 export const GoBackStream = styled(GoToStreamButton)`
-  background-color: red;
+  background-color: #ff715b;
 `;
 
 export const SkipStream = styled(GoToStreamButton)`
   background-color: #3c5ccf;
+`;
+
+export const NoMoreStreamsContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-size: 3rem;
+  line-height: normal;
+  height: 100%;
+`;
+
+export const FetchMoreStreams = styled(GoToStreamButton)`
+  background-color: #3ccf91;
 `;
