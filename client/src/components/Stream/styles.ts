@@ -23,10 +23,8 @@ export const GoToStreamButton = styled.a`
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 36px;
+  height: 48px;
   font-size: 14px;
-  padding-right: 24px;
-  padding-left: 24px;
   line-height: inherit;
   text-decoration: none;
   cursor: pointer;
@@ -36,6 +34,8 @@ export const GoToStreamButton = styled.a`
   box-shadow: inset 0 0 20px 20px transparent;
   background-color: #6441a4;
   transition: box-shadow 0.2s ease;
+  padding: 9px 24px;
+  border: 1px solid transparent;
 
   &:hover {
     box-shadow: inset 0 0 20px 20px rgba(0, 0, 0, 0.1);
