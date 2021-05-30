@@ -30,7 +30,7 @@ export async function getStreams(req: Request, res: Response) {
 }
 
 export async function getClipsFromUser(req: Request, res: Response) {
-  const { broadcasterID, gameID } = req.query;
+  const { broadcasterID } = req.query;
 
   const url = `https://api.twitch.tv/helix/clips?broadcaster_id=${broadcasterID}`;
 
