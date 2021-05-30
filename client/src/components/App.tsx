@@ -66,7 +66,7 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   /* margin-top: 144px; */
-  margin-bottom: 144px;
+  /* margin-bottom: 144px; */
 `;
 
 /**
@@ -77,7 +77,20 @@ const Container = styled.div`
 const App: React.FunctionComponent = () => {
   const [streams, setStreams] = useState<IStream[]>([]);
   const [pageCursor, setPageCursor] = useState("");
-  const [offset, setOffset] = useState(0);
+  const [streamOffset, setStreamOffset] = useState(0);
+
+  const handleStreamOffset = (offset: "BACK" | "NEXT") => {
+    if (offset === "BACK") {
+      console.log(streamOffset);
+      if (streamOffset >= 0) {
+        setStreamOffset(streamOffset - 1);
+      }
+    } else if (offset === "NEXT") {
+      if (streamOffset < streams.length) {
+        setStreamOffset(streamOffset + 1);
+      }
+    }
+  }
 
   const getStreams = async (
     limit: number,
@@ -108,7 +121,7 @@ const App: React.FunctionComponent = () => {
   return (
     <Container>
       <GlobalStyles />
-      <Clip stream={streams[offset]} />
+      <Clip stream={streams[streamOffset]} handleStreamOffset={handleStreamOffset} />
       {/* <Gallery clips={streamClips} /> */}
     </Container>
   );
