@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styled from "styled-components";
 
-import GlobalStyles from '../themes/GlobalStyles';
+import GlobalStyles from "../themes/GlobalStyles";
 
 import Gallery from "../components/Gallery/Gallery";
 import Clip from "../components/Clip/Clip";
@@ -78,26 +78,23 @@ const App: React.FunctionComponent = () => {
   const [streams, setStreams] = useState<IStream[]>([]);
   const [pageCursor, setPageCursor] = useState("");
   const [streamOffset, setStreamOffset] = useState(0);
+  const [fetchMoreStreams, setFetchMoreStreams] = useState(false);
 
-  const handleStreamOffset = (offset: "BACK" | "NEXT") => {
-    if (offset === "BACK") {
-      console.log(streamOffset);
-      if (streamOffset >= 0) {
-        setStreamOffset(streamOffset - 1);
-      }
-    } else if (offset === "NEXT") {
-      if (streamOffset < streams.length) {
-        setStreamOffset(streamOffset + 1);
-      }
-    }
-  }
-
+  /**
+   * Fetch streams
+   * @param limit
+   * @param offset
+   * @param cursor
+   * @returns
+   */
   const getStreams = async (
     limit: number,
     offset: string = "",
     cursor: string = ""
   ) => {
-    const url = `${serverUrl}/twitch/streams?limit=${limit}`;
+    let url = `${serverUrl}/twitch/streams?limit=${limit}`;
+
+    url += offset ? `&pagination=${offset}&cursor=${cursor}` : "";
 
     const twitchStreamsData: IGetStreamsData = await axios
       .get(url)
@@ -108,20 +105,61 @@ const App: React.FunctionComponent = () => {
         console.log(error);
       });
 
-    const { data, pagination } = twitchStreamsData;
+    return twitchStreamsData;
+  };
+
+  const handleStreamOffset = (offset: "BACK" | "NEXT") => {
+    console.log(offset, streamOffset);
+
+    if (offset === "BACK") {
+      if (streamOffset >= 0) {
+        setStreamOffset(streamOffset - 1);
+        setFetchMoreStreams(false);
+      }
+    }
+
+    if (offset === "NEXT") {
+      if (streamOffset < streams.length - 1) {
+        setStreamOffset(streamOffset + 1);
+        setFetchMoreStreams(false);
+      } else {
+        setStreamOffset(streamOffset + 1);
+        setFetchMoreStreams(true);
+      }
+    }
+  };
+
+  const handleFetchMoreStreams = async (limit: number) => {
+    if (fetchMoreStreams && pageCursor) {
+      const { data, pagination } = await getStreams(limit, "after", pageCursor);
+
+      setStreams([...streams, ...data]);
+      setPageCursor(pagination.cursor);
+      setFetchMoreStreams(false);
+    }
+  };
+
+  const getStreamsOnMount = async (limit: number) => {
+    const { data, pagination } = await getStreams(limit);
 
     setStreams(data);
     setPageCursor(pagination.cursor);
   };
 
   useEffect(() => {
-    getStreams(20);
+    getStreamsOnMount(20);
   }, []);
 
   return (
     <Container>
       <GlobalStyles />
-      <Clip stream={streams[streamOffset]} handleStreamOffset={handleStreamOffset} />
+      <Clip
+        stream={streams[streamOffset]}
+        handleStreamOffset={handleStreamOffset}
+        streamOffset={streamOffset}
+        fetchMoreStreams={fetchMoreStreams}
+        handleFetchMoreStreams={handleFetchMoreStreams}
+      />
       {/* <Gallery clips={streamClips} /> */}
     </Container>
   );
