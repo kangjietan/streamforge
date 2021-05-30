@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 import GlobalStyles from "../themes/GlobalStyles";
 
-import Gallery from "../components/Gallery/Gallery";
+// import Gallery from "../components/Gallery/Gallery";
 import Clip from "../components/Clip/Clip";
 
 const serverUrl = "http://localhost:3000";
@@ -81,10 +81,10 @@ const App: React.FunctionComponent = () => {
   const [fetchMoreStreams, setFetchMoreStreams] = useState(false);
 
   /**
-   * Fetch streams
-   * @param limit
-   * @param offset
-   * @param cursor
+   * Fetch streams from Twitch API through proxy.
+   * @param limit Number of streams to return. Maximum: 100. Default: 20.
+   * @param offset "after" | "before". Tells server to retrieve after or before cursor.
+   * @param cursor Pointer on where to retrieve streams.
    * @returns
    */
   const getStreams = async (
@@ -94,7 +94,7 @@ const App: React.FunctionComponent = () => {
   ) => {
     let url = `${serverUrl}/twitch/streams?limit=${limit}`;
 
-    url += offset ? `&pagination=${offset}&cursor=${cursor}` : "";
+    url += offset && cursor ? `&pagination=${offset}&cursor=${cursor}` : "";
 
     const twitchStreamsData: IGetStreamsData = await axios
       .get(url)
@@ -108,9 +108,11 @@ const App: React.FunctionComponent = () => {
     return twitchStreamsData;
   };
 
+  /**
+   * Increase/decrease stream offset to return the next stream in the array.
+   * @param offset "BACK" to decrement and "NEXT" to increment.
+   */
   const handleStreamOffset = (offset: "BACK" | "NEXT") => {
-    console.log(offset, streamOffset);
-
     if (offset === "BACK") {
       if (streamOffset >= 0) {
         setStreamOffset(streamOffset - 1);
@@ -129,6 +131,10 @@ const App: React.FunctionComponent = () => {
     }
   };
 
+  /**
+   * Fetch more streams when user hits stream array length. Concat current results and with retrieved results.
+   * @param limit Number of streams to return. Maximum: 100. Default: 20.
+   */
   const handleFetchMoreStreams = async (limit: number) => {
     if (fetchMoreStreams && pageCursor) {
       const { data, pagination } = await getStreams(limit, "after", pageCursor);
@@ -139,6 +145,10 @@ const App: React.FunctionComponent = () => {
     }
   };
 
+  /**
+   * Fetch streams and set state.
+   * @param limit Number of streams to return. Maximum: 100. Default: 20.
+   */
   const getStreamsOnMount = async (limit: number) => {
     const { data, pagination } = await getStreams(limit);
 
@@ -160,7 +170,6 @@ const App: React.FunctionComponent = () => {
         fetchMoreStreams={fetchMoreStreams}
         handleFetchMoreStreams={handleFetchMoreStreams}
       />
-      {/* <Gallery clips={streamClips} /> */}
     </Container>
   );
 };
