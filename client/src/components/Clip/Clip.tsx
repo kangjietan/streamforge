@@ -25,10 +25,17 @@ interface Props {
   handleStreamOffset: (offset: "BACK" | "NEXT") => void;
   streamOffset: number;
   fetchMoreStreams: boolean;
+  handleFetchMoreStreams: (limit: number) => void;
 }
 
 const Clip: React.FunctionComponent<Props> = (props) => {
-  const { stream, handleStreamOffset, streamOffset, fetchMoreStreams } = props;
+  const {
+    stream,
+    handleStreamOffset,
+    streamOffset,
+    fetchMoreStreams,
+    handleFetchMoreStreams,
+  } = props;
 
   const [currentRandomClip, setCurrentRandomClip] =
     useState<IClip | null>(null); // Current game streamed related clip
@@ -78,6 +85,46 @@ const Clip: React.FunctionComponent<Props> = (props) => {
     setClipOffset(0);
   };
 
+  const handleGoBackClick = () => {
+    const nextOffset = clipOffset - 1;
+
+    // Decrease offset if there are clips to be retrieved
+    if (nextOffset >= 0) {
+      setClipOffset(nextOffset);
+    } else {
+      return;
+    }
+
+    // If there are filtered clips
+    if (filteredClips) {
+      setCurrentRandomClip(filteredClips[nextOffset]);
+    }
+  };
+
+  const handleSkipClip = () => {
+    const nextOffset = clipOffset + 1;
+    // Increase offset if there are clips to be retrieved
+    if (nextOffset < filteredClips.length) {
+      setClipOffset(nextOffset);
+    } else {
+      return;
+    }
+    // If there are filtered clips
+    if (filteredClips) {
+      setCurrentRandomClip(filteredClips[nextOffset]);
+    }
+  };
+
+  /* If there are clips then show them on click */
+  const handleShowDifferentClips = () => {
+    if (streamClips) {
+      setFilteredClips(streamClips.data);
+      setCurrentRandomClip(streamClips.data[0]);
+      setNoGameClips(false);
+      setClipOffset(0);
+    }
+  };
+
   const streamID = stream ? stream.id : 0;
 
   useEffect(() => {
@@ -87,18 +134,17 @@ const Clip: React.FunctionComponent<Props> = (props) => {
     }
   }, [streamID]);
 
-  console.log(stream);
-
   return (
     <Container>
-        <Stream
-          streamOffset={streamOffset}
-          clearData={clearData}
-          currentRandomClip={currentRandomClip}
-          handleStreamOffset={handleStreamOffset}
-          stream={stream}
-        />
-      {/* Streamer is not currently streaming game so don't display */}
+      <Stream
+        streamOffset={streamOffset}
+        clearData={clearData}
+        currentRandomClip={currentRandomClip}
+        handleStreamOffset={handleStreamOffset}
+        stream={stream}
+        fetchMoreStreams={fetchMoreStreams}
+        handleFetchMoreStreams={handleFetchMoreStreams}
+      />
       {!noGameClips ? (
         <EmbedClipContainer>
           <GoBackClip
@@ -107,21 +153,7 @@ const Clip: React.FunctionComponent<Props> = (props) => {
               visibility: clipOffset > 0 ? "visible" : "hidden",
               pointerEvents: clipOffset > 0 ? "all" : "none",
             }}
-            onClick={() => {
-              const nextOffset = clipOffset - 1;
-
-              // Decrease offset if there are clips to be retrieved
-              if (nextOffset >= 0) {
-                setClipOffset(nextOffset);
-              } else {
-                return;
-              }
-
-              // If there are filtered clips
-              if (filteredClips) {
-                setCurrentRandomClip(filteredClips[nextOffset]);
-              }
-            }}
+            onClick={handleGoBackClick}
           >
             {renderSVG("chevronCircleLeft")}
           </GoBackClip>
@@ -138,41 +170,19 @@ const Clip: React.FunctionComponent<Props> = (props) => {
               visibility: !fetchMoreStreams ? "visible" : "hidden",
               pointerEvents: !fetchMoreStreams ? "all" : "none",
             }}
-            onClick={() => {
-              const nextOffset = clipOffset + 1;
-              // Increase offset if there are clips to be retrieved
-              if (nextOffset < filteredClips.length) {
-                setClipOffset(nextOffset);
-              } else {
-                return;
-              }
-              // If there are filtered clips
-              if (filteredClips) {
-                setCurrentRandomClip(filteredClips[nextOffset]);
-              }
-            }}
+            onClick={handleSkipClip}
           >
             {renderSVG("chevronCircleRight")}
           </SkipClip>
-          {/* If more streams need to be fetched */}
         </EmbedClipContainer>
       ) : (
+        // Streamer is not currently streaming game so don't display
         <NoClipsContainer>
           <p>
             {`${stream?.user_login} is currently not streaming ${stream?.game_name}`}
           </p>
-          {/* If there are clips then show them on click */}
           {streamClips !== null ? (
-            <ViewOtherClipsButton
-              onClick={() => {
-                if (streamClips) {
-                  setFilteredClips(streamClips.data);
-                  setCurrentRandomClip(streamClips.data[0]);
-                  setNoGameClips(false);
-                  setClipOffset(0);
-                }
-              }}
-            >
+            <ViewOtherClipsButton onClick={handleShowDifferentClips}>
               View Other Clips
             </ViewOtherClipsButton>
           ) : null}
