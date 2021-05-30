@@ -47,7 +47,7 @@ const Clip: React.FunctionComponent<Props> = (props) => {
 
   const fetchClipsFromStreams = async (stream?: IStream) => {
     if (stream) {
-      const url = `${serverUrl}/twitch/clips?broadcasterID=${stream.user_id}&gameID=${stream.game_id}`;
+      const url = `${serverUrl}/twitch/clips?broadcasterID=${stream.user_id}`;
       const responseData: IClipsFromStreamsData = await axios
         .get(url)
         .then((response) => {
@@ -117,7 +117,7 @@ const Clip: React.FunctionComponent<Props> = (props) => {
 
   /* If there are clips then show them on click */
   const handleShowDifferentClips = () => {
-    if (streamClips) {
+    if (streamClips && streamClips.data.length > 0) {
       setFilteredClips(streamClips.data);
       setCurrentRandomClip(streamClips.data[0]);
       setNoGameClips(false);
@@ -167,8 +167,8 @@ const Clip: React.FunctionComponent<Props> = (props) => {
           ></EmbedClip>
           <SkipClip
             style={{
-              visibility: !fetchMoreStreams ? "visible" : "hidden",
-              pointerEvents: !fetchMoreStreams ? "all" : "none",
+              visibility: clipOffset < filteredClips.length - 1 ? "visible" : "hidden",
+              pointerEvents: clipOffset < filteredClips.length - 1 ? "all" : "none",
             }}
             onClick={handleSkipClip}
           >
@@ -179,9 +179,9 @@ const Clip: React.FunctionComponent<Props> = (props) => {
         // Streamer is not currently streaming game so don't display
         <NoClipsContainer>
           <p>
-            {`${stream?.user_login} is currently not streaming ${stream?.game_name}`}
+            {`${stream?.user_login} has no top clips for ${stream?.game_name}.`}
           </p>
-          {streamClips !== null ? (
+          {streamClips && streamClips.data.length > 0 ? (
             <ViewOtherClipsButton onClick={handleShowDifferentClips}>
               View Other Clips
             </ViewOtherClipsButton>
