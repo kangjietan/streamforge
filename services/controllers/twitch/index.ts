@@ -6,7 +6,7 @@ export async function getStreams(req: Request, res: Response) {
 
   let url = `https://api.twitch.tv/helix/streams?first=${limit ? limit : 20}`;
 
-  pagination && cursor ? (url += `&=${pagination}=${cursor}`) : null;
+  pagination && cursor ? (url += `&${pagination}=${cursor}`) : null;
 
   const options: AxiosRequestConfig = {
     url,
@@ -20,8 +20,8 @@ export async function getStreams(req: Request, res: Response) {
 
   return axios(options)
     .then((response) => {
-      console.log(response);
-      console.log(response.data);
+      // console.log(response);
+      // console.log(response.data);
       res.json(response.data);
     })
     .catch((error) => {
@@ -46,8 +46,8 @@ export async function getClipsFromUser(req: Request, res: Response) {
 
   return axios(options)
     .then((response) => {
-      console.log(response);
-      console.log(response.data);
+      // console.log(response);
+      // console.log(response.data);
       res.json(response.data);
     })
     .catch((error) => {
