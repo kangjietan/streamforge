@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-import {GoToStreamButton} from "../Stream/styles";
+import { GoToStreamButton } from "../Stream/styles";
 
 export const Container = styled.div`
   display: flex;
