@@ -10,6 +10,8 @@ import {
   SkipClip,
   NoClipsContainer,
   ViewOtherClipsButton,
+  ToggleSwitch,
+  AutoPlayContainer,
 } from "./styles";
 
 import Stream from "../Stream/Stream";
@@ -44,6 +46,7 @@ const Clip: React.FunctionComponent<Props> = (props) => {
   const [filteredClips, setFilteredClips] = useState<IClip[]>([]); // Clips that are currently related to the current streamed game
   const [clipOffset, setClipOffset] = useState(0); // Navigate around clips
   const [noGameClips, setNoGameClips] = useState(false); // If the clips do not pertain to the currently streamed game
+  const [autoPlay, setAutoPlay] = useState(true);
 
   /**
    * Fetch top clips from current stream using user id on stream object.
@@ -139,6 +142,10 @@ const Clip: React.FunctionComponent<Props> = (props) => {
       setClipOffset(0);
     }
   };
+ 
+  const handleToggleSwitchClick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAutoPlay(!autoPlay);
+  }
 
   const streamID = stream ? stream.id : 0;
 
@@ -151,6 +158,13 @@ const Clip: React.FunctionComponent<Props> = (props) => {
 
   return (
     <Container>
+      <AutoPlayContainer>
+        <ToggleSwitch>
+          <input type="checkbox" defaultChecked={autoPlay} onChange={handleToggleSwitchClick}/>
+          <span></span>
+        </ToggleSwitch>
+        <p>Autoplay</p>
+      </AutoPlayContainer>
       <Stream
         streamOffset={streamOffset}
         clearData={clearData}
@@ -176,7 +190,7 @@ const Clip: React.FunctionComponent<Props> = (props) => {
             src={
               currentRandomClip
                 ? currentRandomClip.embed_url +
-                  "&autoplay=true&muted=false&parent=localhost"
+                  `&autoplay=${autoPlay}&muted=false&parent=localhost`
                 : ""
             }
             allowFullScreen={true}
