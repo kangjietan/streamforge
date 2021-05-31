@@ -76,6 +76,10 @@ export const AutoPlayContainer = styled.div`
   justify-content: center;
   align-items: center;
   align-self: flex-end;
+
+  & > p {
+    margin: 0;
+  }
 `;
 
 export const ToggleSwitch = styled.label`
