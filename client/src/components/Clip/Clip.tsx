@@ -45,7 +45,11 @@ const Clip: React.FunctionComponent<Props> = (props) => {
   const [clipOffset, setClipOffset] = useState(0); // Navigate around clips
   const [noGameClips, setNoGameClips] = useState(false); // If the clips do not pertain to the currently streamed game
 
-  const fetchClipsFromStreams = async (stream?: IStream) => {
+  /**
+   * Fetch top clips from current stream using user id on stream object.
+   * @param stream IStream interface. Response data from fetching live streams.
+   */
+  const fetchClipsFromStreams = async (stream: IStream) => {
     if (stream) {
       const url = `${serverUrl}/twitch/clips?broadcasterID=${stream.user_id}`;
       const responseData: IClipsFromStreamsData = await axios
@@ -77,6 +81,9 @@ const Clip: React.FunctionComponent<Props> = (props) => {
     }
   };
 
+  /**
+   * Reset state when changing offset for stream or clips.
+   */
   const clearData = () => {
     setCurrentRandomClip(null);
     setFilteredClips([]);
@@ -85,6 +92,9 @@ const Clip: React.FunctionComponent<Props> = (props) => {
     setClipOffset(0);
   };
 
+  /**
+   * Decrease offset and update current clip if there are clips.
+   */
   const handleGoBackClick = () => {
     const nextOffset = clipOffset - 1;
 
@@ -101,6 +111,9 @@ const Clip: React.FunctionComponent<Props> = (props) => {
     }
   };
 
+  /**
+   * Increase offset and update current clip if there are clips.
+   */
   const handleSkipClip = () => {
     const nextOffset = clipOffset + 1;
     // Increase offset if there are clips to be retrieved
@@ -115,7 +128,9 @@ const Clip: React.FunctionComponent<Props> = (props) => {
     }
   };
 
-  /* If there are clips then show them on click */
+  /**
+   * If there are clips then show them on click.
+   */
   const handleShowDifferentClips = () => {
     if (streamClips && streamClips.data.length > 0) {
       setFilteredClips(streamClips.data);
@@ -160,15 +175,18 @@ const Clip: React.FunctionComponent<Props> = (props) => {
           <EmbedClip
             src={
               currentRandomClip
-                ? currentRandomClip.embed_url + "&parent=localhost"
+                ? currentRandomClip.embed_url +
+                  "&autoplay=true&muted=false&parent=localhost"
                 : ""
             }
             allowFullScreen={true}
           ></EmbedClip>
           <SkipClip
             style={{
-              visibility: clipOffset < filteredClips.length - 1 ? "visible" : "hidden",
-              pointerEvents: clipOffset < filteredClips.length - 1 ? "all" : "none",
+              visibility:
+                clipOffset < filteredClips.length - 1 ? "visible" : "hidden",
+              pointerEvents:
+                clipOffset < filteredClips.length - 1 ? "all" : "none",
             }}
             onClick={handleSkipClip}
           >
