@@ -17,6 +17,7 @@ export const StreamInformationContainer = styled.div`
 
 export const CurrentStreamer = styled.h1`
   color: var(--primary-text-color);
+  font-size: clamp(1rem, 0.6727rem + 1.4545vw, 3rem);
 `;
 
 export const GoToStreamButton = styled.a`
