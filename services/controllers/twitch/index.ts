@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import axios, { AxiosRequestConfig } from "axios";
 
+import accessEnv from "../../helpers/accessEnv";
+
 export async function getStreams(req: Request, res: Response) {
   const { limit, pagination, cursor } = req.query;
 
@@ -12,16 +14,14 @@ export async function getStreams(req: Request, res: Response) {
     url,
     method: "GET",
     headers: {
-      Authorization: `Bearer ${process.env.APP_ACCESS_TOKEN}`,
-      "Client-ID": process.env.TWITCH_CLIENT_ID,
+      Authorization: `Bearer ${accessEnv("APP_ACCESS_TOKEN")}`,
+      "Client-ID": accessEnv("TWITCH_CLIENT_ID"),
       Accept: "application/vnd.twitchtv.v5+json",
     },
   };
 
   return axios(options)
     .then((response) => {
-      // console.log(response);
-      // console.log(response.data);
       res.json(response.data);
     })
     .catch((error) => {
@@ -38,16 +38,14 @@ export async function getClipsFromUser(req: Request, res: Response) {
     url,
     method: "GET",
     headers: {
-      Authorization: `Bearer ${process.env.APP_ACCESS_TOKEN}`,
-      "Client-ID": process.env.TWITCH_CLIENT_ID,
+      Authorization: `Bearer ${accessEnv("APP_ACCESS_TOKEN")}`,
+      "Client-ID": accessEnv("TWITCH_CLIENT_ID"),
       Accept: "application/vnd.twitchtv.v5+json",
     },
   };
 
   return axios(options)
     .then((response) => {
-      // console.log(response);
-      // console.log(response.data);
       res.json(response.data);
     })
     .catch((error) => {
